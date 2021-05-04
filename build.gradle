@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+        jcenter()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.4.0"
+        if(project.hasProperty('sealights')){
+            classpath 'io.sealights.on-premise.agents.plugin:sealights-gradle-plugin:latest.release'
+        }
+    }
+}
+
+allprojects {
+    apply plugin: 'java'
+
+    if (project.hasProperty('sealights')) {
+        apply plugin: 'io.sealights.on-premise.agents.plugin.sealights-gradle-plugin'
+        sealights {
+            token = System.getenv('SL_TOKEN')
+            createBuildSessionId = true
+            appName = 'test-sealights'
+            branch = System.getenv('CI_COMMIT_BRANCH')
+            build = System.getenv('CI_JOB_ID')
+            packagesIncluded = "*test.sealights.*"
+            includeResources = true
+            filesStorage = "/tmp"
+
+            testTasksAndStages = ["test":"Unit Tests"]
+        }
+    }
+}
