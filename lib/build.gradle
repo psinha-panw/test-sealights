@@ -11,6 +11,21 @@ plugins {
     id 'java-library'
 }
 
+if (project.hasProperty('sealights')) {
+    apply plugin: 'io.sealights.on-premise.agents.plugin.sealights-gradle-plugin'
+    sealights {
+        appName = 'test-sealights-lib'
+        build = "lib-${System.getenv('CI_JOB_ID')}"
+        token = System.getenv('SL_TOKEN')
+        createBuildSessionId = true
+        branch = System.getenv('CI_COMMIT_BRANCH')
+        packagesIncluded = "*test.sealights.*"
+        includeResources = true
+        filesStorage = "/tmp"
+        testTasksAndStages = ["test":"Unit Tests"]
+    }
+}
+
 repositories {
     // Use JCenter for resolving dependencies.
     jcenter()
